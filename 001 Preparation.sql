@@ -5,6 +5,7 @@
 
 CREATE SCHEMA demo
 CREATE SCHEMA PowerBI
+GO
 
 --Bring DimDate into this year
 CREATE OR ALTER VIEW [PowerBI].[DimDate] AS (
@@ -52,6 +53,25 @@ FROM
 )
 GO
 --select * from PowerBI.OrderDate order by 1
+
+--Bring FactResellerSales into this year
+CREATE OR ALTER VIEW [PowerBI].[FactResellerSales] AS (
+SELECT
+	CONVERT(int, FORMAT(DATEADD(year, yd.YearDifference, frs.OrderDate), 'yyyyMMdd')) as OrderDateKey,
+	DATEADD(year, yd.YearDifference, frs.OrderDate) as OrderDate,
+	CONVERT(int, FORMAT(DATEADD(year, yd.YearDifference, frs.ShipDate), 'yyyyMMdd')) as ShipDateKey,
+	DATEADD(year, yd.YearDifference, frs.ShipDate) as ShipDate,
+	frs.ProductKey,
+	frs.SalesTerritoryKey,
+	frs.SalesAmount,
+	frs.OrderQuantity,
+	frs.TaxAmt
+FROM dbo.FactResellerSales frs
+--FROM dbo.FactResellerSalesLARGE frs
+CROSS JOIN (SELECT YEAR(SYSDATETIME()) - YEAR(MAX(OrderDate)) as YearDifference FROM dbo.FactResellerSales) yd
+);
+GO
+
 
 CREATE OR ALTER VIEW [PowerBI].[DimProduct] AS ( 
 SELECT [ProductKey]
@@ -133,24 +153,6 @@ FROM
 	dbo.DimProduct dp 
 LEFT JOIN dbo.DimProductSubcategory dps ON dps.ProductSubcategoryKey=dp.ProductSubcategoryKey
 LEFT JOIN dbo.DimProductCategory dpc ON dpc.ProductCategoryKey=dps.ProductCategoryKey
-GO
-
---Bring FactResellerSales into this year
-CREATE OR ALTER VIEW [PowerBI].[FactResellerSales] AS (
-SELECT
-	CONVERT(int, FORMAT(DATEADD(year, yd.YearDifference, frs.OrderDate), 'yyyyMMdd')) as OrderDateKey,
-	DATEADD(year, yd.YearDifference, frs.OrderDate) as OrderDate,
-	CONVERT(int, FORMAT(DATEADD(year, yd.YearDifference, frs.ShipDate), 'yyyyMMdd')) as ShipDateKey,
-	DATEADD(year, yd.YearDifference, frs.ShipDate) as ShipDate,
-	frs.ProductKey,
-	frs.SalesTerritoryKey,
-	frs.SalesAmount,
-	frs.OrderQuantity,
-	frs.TaxAmt
-FROM dbo.FactResellerSales frs
---FROM dbo.FactResellerSalesLARGE frs
-CROSS JOIN (SELECT YEAR(SYSDATETIME()) - YEAR(MAX(OrderDate)) as YearDifference FROM dbo.FactResellerSales) yd
-);
 GO
 
 -- 0NF
