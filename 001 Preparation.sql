@@ -4,6 +4,7 @@
  */
 
 CREATE SCHEMA demo
+GO
 CREATE SCHEMA PowerBI
 GO
 
@@ -137,6 +138,7 @@ GO
 
 -- Denormalized Table
 DROP TABLE IF EXISTS PowerBI.Product
+GO
 CREATE TABLE PowerBI.Product (
 	ID int IDENTITY(1,1) PRIMARY KEY,
 	Product nvarchar(50),
