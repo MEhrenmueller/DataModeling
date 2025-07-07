@@ -3,9 +3,9 @@
  * Markus Ehrenmueller-Jensen
  */
 
-CREATE SCHEMA demo
+IF NOT EXISTS (SELECT name FROM sys.schemas WHERE name = N'demo') EXEC('CREATE SCHEMA [demo] AUTHORIZATION [dbo]');
 GO
-CREATE SCHEMA PowerBI
+IF NOT EXISTS (SELECT name FROM sys.schemas WHERE name = N'PowerBI') EXEC('CREATE SCHEMA [PowerBI] AUTHORIZATION [dbo]');
 GO
 
 --Bring DimDate into this year
