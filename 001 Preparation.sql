@@ -1,6 +1,7 @@
 /*
  * PREPARATION
  * Markus Ehrenmueller-Jensen
+ * Version: 20260814
  */
 
 IF NOT EXISTS (SELECT name FROM sys.schemas WHERE name = N'demo') EXEC('CREATE SCHEMA [demo] AUTHORIZATION [dbo]');
@@ -73,7 +74,6 @@ CROSS JOIN (SELECT YEAR(SYSDATETIME()) - YEAR(MAX(OrderDate)) as YearDifference 
 );
 GO
 
-
 CREATE OR ALTER VIEW [PowerBI].[DimProduct] AS ( 
 SELECT [ProductKey]
       ,[ProductAlternateKey]
@@ -109,14 +109,14 @@ SELECT [ProductKey]
       ,[JapaneseDescription]
       ,[TurkishDescription]
       ,CASE [StartDate]
-	   WHEN {d'2011-07-01'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDAte)) FROM PowerBI.FactResellerSales) + 0, 01, 01)
-	   WHEN {d'2012-07-01'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDAte)) FROM PowerBI.FactResellerSales) + 2, 01, 01)
-	   WHEN {d'2013-07-01'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDAte)) FROM PowerBI.FactResellerSales) + 3, 01, 01)
+	   WHEN {d'2011-07-01'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDate)) FROM PowerBI.FactResellerSales) + 0, 01, 01)
+	   WHEN {d'2012-07-01'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDate)) FROM PowerBI.FactResellerSales) + 2, 01, 01)
+	   WHEN {d'2013-07-01'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDate)) FROM PowerBI.FactResellerSales) + 3, 01, 01)
 	   ELSE [StartDate]
 	   END [StartDate]
       ,CASE [EndDate]
-	   WHEN {d'2007-12-28'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDAte)) FROM PowerBI.FactResellerSales) + 2, 01, 01)
-	   WHEN {d'2008-12-27'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDAte)) FROM PowerBI.FactResellerSales) + 3, 01, 01)
+	   WHEN {d'2007-12-28'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDate)) FROM PowerBI.FactResellerSales) + 2, 01, 01)
+	   WHEN {d'2008-12-27'} THEN DATEFROMPARTS((SELECT MIN(YEAR(OrderDate)) FROM PowerBI.FactResellerSales) + 3, 01, 01)
 	   ELSE [EndDate]
 	   END [EndDate]
       ,[Status]
@@ -138,9 +138,8 @@ GO
 
 -- Denormalized Table
 DROP TABLE IF EXISTS PowerBI.Product
-GO
 CREATE TABLE PowerBI.Product (
-	ID int IDENTITY(1,1) PRIMARY KEY,
+	ID bigint IDENTITY(1,1) , --PRIMARY KEY,
 	Product nvarchar(50),
 	Subcategory nvarchar(50),
 	Category nvarchar(50)
@@ -180,7 +179,7 @@ GROUP BY
 -- Category
 DROP TABLE IF EXISTS demo.Category;
 CREATE TABLE demo.Category (
-	ID int IDENTITY(1,1),
+	ID bigint IDENTITY(1,1),
 	Category nvarchar(50)
 )
 INSERT INTO demo.Category
@@ -193,7 +192,7 @@ FROM
 -- Subcategory
 DROP TABLE IF EXISTS demo.Subcategory;
 CREATE TABLE demo.Subcategory (
-	ID int IDENTITY(1,1),
+	ID bigint IDENTITY(1,1),
 	CategoryID INT,
 	Subcategory nvarchar(50)
 )
@@ -209,7 +208,7 @@ LEFT JOIN demo.Category c ON c.Category=ps.Category;
 -- Product
 DROP TABLE IF EXISTS demo.Product;
 CREATE TABLE demo.Product (
-	ID int IDENTITY(1,1),
+	ID bigint IDENTITY(1,1),
 	SubcategoryID INT,
 	Product nvarchar(50)
 )
@@ -225,7 +224,7 @@ LEFT JOIN demo.Subcategory s ON s.Subcategory=ps.Subcategory;
 -- Sales
 DROP TABLE IF EXISTS demo.Sales;
 CREATE TABLE demo.Sales (
-	ID int IDENTITY(1,1),
+	ID bigint IDENTITY(1,1),
 	ProductID INT,
 	SalesAmount decimal(19,2)
 )
@@ -261,7 +260,7 @@ RETURN
   FROM Nums --LEFT OUTER JOIN dbo.BatchMe ON 1 = 0
   ORDER BY rownum;
 --select * from demo.GetNumsItzikBatch(1, 365)
-
+GO
 
 --financials
 DROP TABLE IF EXISTS demo.financials;
@@ -279,7 +278,7 @@ CREATE TABLE demo.financials (
 	COGS decimal(18,2),
 	Profit decimal(18,2),
 	[Date] date,
-	[Month Number] tinyint,
+	[Month Number] tinyint, 
 	[Month Name] nvarchar(50),
 	[Year] smallint
 );
