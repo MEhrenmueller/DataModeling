@@ -212,7 +212,7 @@ CREATE TABLE demo.Product (
 	SubcategoryID INT,
 	Product nvarchar(50)
 )
-INSERT INTO demo.Product
+INSERT INTO demo.Product (SubcategoryID, Product)
 SELECT 
 	DISTINCT 
 	s.ID SubcategoryID,
